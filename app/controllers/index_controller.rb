@@ -1,6 +1,6 @@
 class IndexController < ApplicationController
   def index
-    raise RestClient::Exceptions::Timeout unless last_server_activity.nil?
+    raise RestClient::Exceptions::Timeout unless available_server?
 
     @courses = TeachbaseClient.new.get('/endpoint/v1/course_sessions').body
   rescue RestClient::ImATeapot => err
@@ -9,8 +9,9 @@ class IndexController < ApplicationController
 
     TeachBaseConnectWorker.perform
     flash[:error] = "Teachbase лежит уже #{server_downtime} часов"
-  else    
+  else   
     Rails.cache.delete('last_server_activity')
+    Rails.cache.delete('server_not_available')
     Rails.cache.write('courses', @courses)
   ensure
     @courses ||= Rails.cache.fetch('courses') || []
@@ -26,6 +27,10 @@ class IndexController < ApplicationController
 
   def server_downtime
     ((Time.zone.now - last_server_activity) / 3600).round
+  end
+
+  def available_server?
+    Rails.cache.fetch('server_not_available').nil?
   end
 
 end
