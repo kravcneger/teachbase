@@ -9,10 +9,10 @@ class IndexController < ApplicationController
 
     TeachBaseConnectWorker.perform
     flash[:error] = "Teachbase лежит уже #{server_downtime} часов"
-  else   
-    Rails.cache.delete('last_server_activity')
+  else    
     Rails.cache.delete('server_not_available')
     Rails.cache.write('courses', @courses)
+    Rails.cache.write('last_server_activity', Time.zone.now)
   ensure
     @courses ||= Rails.cache.fetch('courses') || []
     @courses = JSON.parse(@courses)
