@@ -1,0 +1,29 @@
+<%=flash[:error]%>
+
+
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Список курсов</div>
+
+  <!-- Table -->
+  <table class="table">
+    <thead>
+      <th> id </th>
+      <th> Название курса </th>
+      <th> Владелец </th>
+      <th> </th>
+    <thead>
+
+    <tbody>
+      <% @courses.each do |course|%>
+
+        <tr>
+          <td> <%= course['id'] %> </td>
+          <td> <%= course['name'] %> </td>
+          <td> <%= course['course']['owner_name'] %> </td>
+          <td> <%= image_tag course['course']['thumb_url'], height: 32 %> </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
